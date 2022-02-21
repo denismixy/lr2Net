@@ -27,7 +27,7 @@ namespace lr2Net {
                         " (fio, carBrand, carNumber, carModel, startParking, endParking, parkingPlace, cost)" +
                         " values");
             query.Append(" (");
-            List<String> inputFields = new List<string> { fio, carBand, carNumber, carModel, startParking, endParking, parkingPlace, cost };
+            List<String> inputFields = new List<string> {fio, carBand, carNumber, carModel, startParking, endParking, parkingPlace, cost};
             inputFields.ForEach(inputField => {
                 if (inputField != null) {
                     query = query.Append($" \"{inputField}\",");
