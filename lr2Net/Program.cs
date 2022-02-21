@@ -22,8 +22,10 @@ namespace lr2Net
             } catch (Exception e) {
                 Console.WriteLine(e.StackTrace);
             }
-            MySqlCommand command = new MySqlCommand(QueryBuilder.CreateVisit("damir"));
-            command.ExecuteNonQuery();
+            MySqlCommand command = mySqlConnection.CreateCommand();
+            command.CommandText = QueryBuilder.ShowAllVisits();
+            MySqlDataReader mySqlDataReader = command.ExecuteReader();
+            Console.WriteLine(mySqlDataReader.ToString());
         }
     }
 }
