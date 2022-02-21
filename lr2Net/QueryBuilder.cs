@@ -18,5 +18,15 @@ namespace lr2Net {
                 " cost varchar(100)" +
                 " )";
         }
+
+        public static string CreateVisit(string fio = null, string carBand = null, string carNumber = null, string carModel = null,
+                                        string startParking = null, string endParking = null, string parkingPlace = null, 
+                                        string cost = null) {
+            return ("insert into visits " +
+                "(fio, carBrand, carNumber, carModel, startParking, endParking, parkingPlace, cost)" +
+                "" +
+                "values" +
+                $"({fio}, {carBand}, {carNumber}, {carModel} {startParking}, {endParking}, {parkingPlace}, {cost})");
+        }
     }
 }

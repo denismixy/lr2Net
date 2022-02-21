@@ -22,7 +22,7 @@ namespace lr2Net
             } catch (Exception e) {
                 Console.WriteLine(e.StackTrace);
             }
-            MySqlCommand command = new MySqlCommand("drop table visits");
+            MySqlCommand command = new MySqlCommand(QueryBuilder.CreateVisit("damir"));
             command.ExecuteNonQuery();
         }
     }
