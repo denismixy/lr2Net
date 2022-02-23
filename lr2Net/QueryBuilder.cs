@@ -12,24 +12,25 @@ namespace lr2Net {
                 " carBrand varchar(100)," +
                 " carNumber varchar(100)," +
                 " carModel varchar(100)," +
-                " startParking varchar(100)," +
-                " endParking varchar(100), " +
+                " startParkingDate varchar(100)," +
+                " endParkingDate varchar(100), " +
                 "parkingPlace varchar(100)," +
-                " cost varchar(100)" +
+                " cost varchar(100), " +
+                "id int not null auto_increment, " +
+                "primary key(id)" +
                 " )";
         }
 
-        public static string CreateVisit(string fio = null, string carBand = null, string carNumber = null, string carModel = null,
-                                        string startParking = null, string endParking = null, string parkingPlace = null,
-                                        string cost = null) {
+        public static string CreateVisit(Visit visit) {
             StringBuilder query = new StringBuilder();
             query.Append("insert into visits " +
-                        " (fio, carBrand, carNumber, carModel, startParking, endParking, parkingPlace, cost)" +
+                        " (fio, carBrand, carNumber, carModel, startParkingDate, endParkingDate, parkingPlace, cost)" +
                         " values");
             query.Append(" (");
-            List<String> inputFields = new List<string> {fio, carBand, carNumber, carModel, startParking, endParking, parkingPlace, cost};
+            List<String> inputFields = new List<string> {visit.Fio, visit.CarBrand, visit.CarNumber, visit.CarModel,
+                                                        visit.StartParkingDate, visit.EndParkingDate, visit.ParkingPlace, visit.Cost};
             inputFields.ForEach(inputField => {
-                if (inputField != null) {
+                if (inputField != null && inputField != string.Empty) {
                     query = query.Append($" \"{inputField}\",");
                 } else {
                     query.Append(" null,");
@@ -39,24 +40,23 @@ namespace lr2Net {
             query.Append(")");
             return query.ToString();
         }
-        public static string AssembleWhereCondition(string fio = null, string carBand = null, string carNumber = null, string carModel = null,
-                                        string startParking = null, string endParking = null, string parkingPlace = null,
-                                        string cost = null) {
+        private static string AssembleWhereCondition(Visit visit) {
             StringBuilder query = new StringBuilder();
             query.Append("where ");
             query.Append("(");
             Dictionary<String, Object> inputFields = new Dictionary<string, object> {
-                [nameof(fio)] = fio,
-                [nameof(carBand)] = carBand,
-                [nameof(carNumber)] = carNumber,
-                [nameof(carModel)] = carModel,
-                [nameof(startParking)] = startParking,
-                [nameof(endParking)] = endParking,
-                [nameof(parkingPlace)] = parkingPlace,
-                [nameof(cost)] = cost
+                [nameof(visit.Fio)] = visit.Fio,
+                [nameof(visit.CarBrand)] = visit.CarBrand,
+                [nameof(visit.CarNumber)] = visit.CarNumber,
+                [nameof(visit.CarModel)] = visit.CarModel,
+                [nameof(visit.StartParkingDate)] = visit.StartParkingDate,
+                [nameof(visit.EndParkingDate)] = visit.EndParkingDate,
+                [nameof(visit.ParkingPlace)] = visit.ParkingPlace,
+                [nameof(visit.Cost)] = visit.Cost,
+                [nameof(visit.Id)] = visit.Id,
             };
             foreach (KeyValuePair<String, Object> inputField in inputFields) {
-                if (inputField.Value != null) {
+                if (inputField.Value != null && (string) inputField.Value != string.Empty) {
                     query = query.Append($"{inputField.Key} = \"{inputField.Value}\" and ");
                 }
             }
@@ -65,24 +65,48 @@ namespace lr2Net {
             return query.ToString();
         }
 
-        public static string SearchVisit(string fio = null, string carBand = null, string carNumber = null, string carModel = null,
-                                        string startParking = null, string endParking = null, string parkingPlace = null,
-                                        string cost = null) {
+        public static string SearchVisitsByParams(Visit visit) {
             StringBuilder query = new StringBuilder();
             query.Append("select * " +
                         "from visits ");
-            string wherePart = AssembleWhereCondition(fio, carBand, carNumber, carModel, startParking, endParking, parkingPlace, cost);
+            string wherePart = AssembleWhereCondition(visit);
             query.Append(wherePart);
             return query.ToString();
         }
 
-        public static string DeleteVisit(string fio = null, string carBand = null, string carNumber = null, string carModel = null,
-                                        string startParking = null, string endParking = null, string parkingPlace = null,
-                                        string cost = null) {
+        public static string DeleteVisit(Visit visit) {
             StringBuilder query = new StringBuilder();
             query.Append("delete " +
                         "from visits ");
-            string wherePart = AssembleWhereCondition(fio, carBand, carNumber, carModel, startParking, endParking, parkingPlace, cost);
+            string wherePart = AssembleWhereCondition(visit);
+            query.Append(wherePart);
+            return query.ToString();
+        }
+
+        public static string UpdateVisit(Visit oldVisit, Visit newVisit) {
+            StringBuilder query = new StringBuilder();
+            query.Append("update visits " +
+                        "set ");
+            Dictionary<String, Object> inputFields = new Dictionary<string, object> {
+                [nameof(newVisit.Fio)] = newVisit.Fio,
+                [nameof(newVisit.CarBrand)] = newVisit.CarBrand,
+                [nameof(newVisit.CarNumber)] = newVisit.CarNumber,
+                [nameof(newVisit.CarModel)] = newVisit.CarModel,
+                [nameof(newVisit.StartParkingDate)] = newVisit.StartParkingDate,
+                [nameof(newVisit.EndParkingDate)] = newVisit.EndParkingDate,
+                [nameof(newVisit.ParkingPlace)] = newVisit.ParkingPlace,
+                [nameof(newVisit.Cost)] = newVisit.Cost
+            };
+            foreach (KeyValuePair<String, Object> inputField in inputFields) {
+                if (inputField.Value != null && (string)inputField.Value != string.Empty) {
+                    query = query.Append($"{inputField.Key} = \"{inputField.Value}\", ");
+                } else {
+                    query = query.Append($"{inputField.Key} = null, ");
+                }
+            }
+            query.Remove(query.Length - 2, 2); // for delete last ", " else raise SQL Syntax Error
+            string wherePart = AssembleWhereCondition(oldVisit);
+            query.Append(" "); // adds space in end of command 
             query.Append(wherePart);
             return query.ToString();
         }
